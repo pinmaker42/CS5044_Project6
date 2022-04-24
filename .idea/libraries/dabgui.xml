@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="dabgui">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/dabgui.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
