@@ -12,5 +12,6 @@
     <orderEntry type="library" name="dabgame-ref" level="project" />
     <orderEntry type="library" name="dabgui-api" level="project" />
     <orderEntry type="library" name="dabgui" level="project" />
+    <orderEntry type="library" name="junit" level="project" />
   </component>
 </module>

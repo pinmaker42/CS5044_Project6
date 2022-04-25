@@ -1,4 +1,4 @@
-package edu.vt.cs5044;
+package test;
 
 import static edu.vt.cs5044.DABGuiName.*;
 import java.awt.Component;
@@ -21,13 +21,10 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-//
-// ACADEMIC NOTE: You don't need to alter this file in any way; please use it as-is.
-//
-
-//
-// 2022.Spring
-//
+import edu.vt.cs5044.DABGrid;
+import edu.vt.cs5044.Direction;
+import edu.vt.cs5044.Player;
+import gui.DABPanel;
 
 //CHECKSTYLE:OFF
 @SuppressWarnings("javadoc")
@@ -59,19 +56,17 @@ public class DABPanelTest {
     /**
      * Wrapper method just calls SwingUtilities.invokeAndWait and handles exceptions.
      *
-     * Any checked exception is caught and thrown as an unchecked RunException. The cause of the
-     * RuntimeException is set to the cause of the checked exception.
      *
      * @param r Runnable to invoke (may be a compatible lambda expression or method reference)
      */
     private void SwingInvokeAndWait(Runnable r) {
         try {
             SwingUtilities.invokeAndWait(r);
-        } catch (InterruptedException | InvocationTargetException e) {
+        }
+        catch (InterruptedException | InvocationTargetException e) {
             throw new RuntimeException(e.getCause());
         }
     }
-
 
     /**
      * Ensure the score labels contain only the expected number, with no other digits.
@@ -98,8 +93,7 @@ public class DABPanelTest {
     /**
      * Draw an edge by setting the combo boxes and simulating a click of the draw button.
      *
-     * This must all be done within the context of Swing, so we must use a utility to ask Swing to
-     * schedule the task, then wait until it has been completed to continue testing.
+     *
      *
      * @param x coordinate x
      * @param y coordinate y
@@ -117,8 +111,7 @@ public class DABPanelTest {
     /**
      * Simulate a click of one of the menu items.
      *
-     * This must all be done within the context of Swing, so we must use a utility to ask Swing to
-     * schedule the task, then wait until it has been completed to continue testing.
+     *
      *
      * @param item menu item to click
      */
@@ -129,10 +122,7 @@ public class DABPanelTest {
     /**
      * Find a component by name within the hierarchy of a Swing container.
      *
-     * Recursively searches any sub-containers. Note that we can't check the actual type of the
-     * component found at runtime, so we may return an incompatible subclass of Component,
-     * but we've suppressed the warning. This is intentional, because we prefer to "fail fast"
-     * if a component is found with the right name but the wrong type.
+     *
      *
      * @param <T> Type of component expected to be returned, which can be inferred by compiler
      * @param root top-level container to search
@@ -141,7 +131,7 @@ public class DABPanelTest {
      */
     @SuppressWarnings("unchecked")
     private <T extends Component> T findComponent(Container root, String name) {
-        synchronized(root.getTreeLock()) {
+        synchronized (root.getTreeLock()) {
             for (Component child : root.getComponents()) {
                 if (name.equals(child.getName())) {
                     return (T) child; // Unchecked cast warning, due to type erasure, is suppressd
@@ -157,10 +147,8 @@ public class DABPanelTest {
         }
     }
 
-
-
     //
-    // -----  TEST METHODS  -----
+    // ----- TEST METHODS -----
     //
 
     /**
@@ -212,15 +200,15 @@ public class DABPanelTest {
         assertEquals(3, yCombo.getItemCount());
 
         IntStream.range(0, 3)
-            .forEach(i -> {
-                assertEquals(i, (int) xCombo.getItemAt(i));
-                assertEquals(i, (int) yCombo.getItemAt(i));
-            });
+                .forEach(i -> {
+                    assertEquals(i, (int) xCombo.getItemAt(i));
+                    assertEquals(i, (int) yCombo.getItemAt(i));
+                });
 
         assertEquals(4, dirCombo.getItemCount());
 
         Arrays.stream(Direction.values())
-            .forEach(dir -> assertEquals(dir, dirCombo.getItemAt(dir.ordinal())));
+                .forEach(dir -> assertEquals(dir, dirCombo.getItemAt(dir.ordinal())));
     }
 
     @Test
@@ -449,10 +437,6 @@ public class DABPanelTest {
      * Invoke the application via DABPanel.main().
      *
      * Launch the GUI, then immediately destroy the resulting frames.
-     *
-     * NOTE: This method will very briefly display the entire interface at its normal size.
-     *
-     * ACADEMIC NOTE: This is only needed for 100% coverage; it serves no other useful purpose.
      */
     @Test
     public void testCallMain() {

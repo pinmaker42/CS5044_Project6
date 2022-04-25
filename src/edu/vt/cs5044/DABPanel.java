@@ -1,17 +1,28 @@
-package edu.vt.cs5044;
+package gui;
 
 import static edu.vt.cs5044.DABGuiName.*;
 import java.awt.event.ActionEvent;
+
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-// 2022.Spring
+import edu.vt.cs5044.Coordinate;
+import edu.vt.cs5044.DABGame;
+import edu.vt.cs5044.DABGrid;
+import edu.vt.cs5044.Direction;
+import edu.vt.cs5044.DotsAndBoxes;
+import edu.vt.cs5044.Player;
+
+import java.awt.*;
 
 @SuppressWarnings("serial")
 public class DABPanel extends JPanel {
@@ -29,37 +40,23 @@ public class DABPanel extends JPanel {
 
     public DABPanel(JFrame frame) {
 
-        // Add a menu bar to the frame that will contain this panel
         frame.setJMenuBar(setupMenuBar());
-
-        // Create a new DABGame instance that will act as the game engine
         game = new DABGame();
 
-        // Next we construct the user interface components, and assign a unique name to each
-        // The name is required so that the test code can identify and fetch each component
-
-        // This combo box is initially empty; you'll add option values in updateCombos() below
         xCombo = new JComboBox<>();
         xCombo.setName(X_COMBO);
 
-        // This combo box is initially empty; you'll add option values in updateCombos() below
         yCombo = new JComboBox<>();
         yCombo.setName(Y_COMBO);
 
-        // This combo box is pre-populated with all the valid Direction enum values
         dirCombo = new JComboBox<>(Direction.values());
         dirCombo.setName(DIR_COMBO);
 
-        // The draw button will attempt to draw an edge, as specified by the combo box selections
         drawButton = new JButton();
         drawButton.setName(DRAW_BUTTON);
-        // TODO: Set the text to be displayed on the draw button
-        // TODO: Set the action of the draw button to call handleDrawButton()
-        // NOTE: For any credit, an anonymous inner class must be used
-        // NOTE: For more credit, a lambda expression must be used instead
-        // NOTE: For full credit, a method reference must be used instead
+        drawButton.setText("DRAW!");
+        drawButton.addActionListener(this::handleDrawButton);
 
-        // The JLabel components begin empty; you'll set the relevant text in updateStatus() below
         turnLabel = new JLabel();
         turnLabel.setName(TURN_LABEL);
 
@@ -69,63 +66,123 @@ public class DABPanel extends JPanel {
         p2ScoreLabel = new JLabel();
         p2ScoreLabel.setName(P2_SCORE_LABEL);
 
-        // This is the custom DABGrid component provided by the library
         dabGrid = new DABGrid(game);
         dabGrid.setName(DAB_GRID);
 
-        // Perform the layout of all the user interface components
         setupLayout();
 
-        // Begin a new 3x3 game by default
         startGame(3);
-
     }
 
     private void handleDrawButton(ActionEvent ae) {
-        // TODO: First read the values currently selected by the combo boxes
-        // TODO: Then call drawEdge() using the selected values and retain the returned boolean
-        // TODO: Finally call updateStatus() using the returned value of drawEdge() as the argument
+        int x = xCombo.getItemAt(xCombo.getSelectedIndex());
+        int y = yCombo.getItemAt(yCombo.getSelectedIndex());
+        Direction dir = dirCombo.getItemAt(dirCombo.getSelectedIndex());
+        Coordinate cord = new Coordinate(x, y);
+
+        boolean drawn = game.drawEdge(cord, dir);
+        if (drawn) {
+            updateStatus(true);
+        }
+        updateStatus(false);
     }
 
     private void updateStatus(boolean updateRequired) {
-        // TODO: If parameter is false, do nothing and just return; otherwise do the following:
-        // TODO: Read the game status via accessors, then set each JLabel text accordingly
-        // TODO: Disable the draw button, if the game is over as indicated by getCurrentPlayer()
-        // TODO: Call repaint() at the end of this method, in order to actually render any changes
+        if (updateRequired) {
+            p1ScoreLabel.setText("PlayerONE: " + game.getScores().get(Player.ONE).toString());
+            p2ScoreLabel.setText("PlayerTWO: " + game.getScores().get(Player.TWO).toString());
+        }
+        if (game.getCurrentPlayer() == null) {
+            turnLabel.setText("GAME OVER");
+            drawButton.setEnabled(false);
+        } else {
+            turnLabel.setText("Go Player" + game.getCurrentPlayer() + "!");
+        }
+        repaint();
     }
 
     private void updateCombos() {
-        // TODO: Update the coordinate combo box options, based on the current size of the grid
-        // NOTE: For any credit, the combo options must handle games up to a size of 4x4
-        // NOTE: For more credit, the combo options must exactly match the size of the game
-        // NOTE: For full credit, a single loop must be used to eliminate redundancies
+        xCombo.removeAllItems();
+        yCombo.removeAllItems();
+        for (int i = 0; i < game.getSize(); i++) {
+            xCombo.addItem(i);
+            yCombo.addItem(i);
+        }
     }
 
     private void startGame(int size) {
-        // TODO: Initialize a new game of the specified size
-        // TODO: Call updateCombos() and updateStatus(true)
-        // TODO: Enable the draw button, which may have been disabled from a previous game
+        game.init(size);
+        updateCombos();
+        updateStatus(true);
+        drawButton.setEnabled(true);
     }
 
     private void setupLayout() {
-        // TODO: Layout this panel and all its sub-panels and components
-        // NOTE: For any credit, the layout must include all components
-        // NOTE: For more credit, the layout must look reasonably neat
-        // NOTE: For full credit, the layout must be reasonably responsive to resizing of the frame
+        setLayout(new BorderLayout());
+
+        JPanel comboPanel = new JPanel();
+        comboPanel.add(xCombo);
+        comboPanel.add(yCombo);
+        comboPanel.add(dirCombo);
+        comboPanel.add(drawButton);
+
+        JPanel turnPanel = new JPanel();
+        turnPanel.setLayout(new BorderLayout());
+        turnLabel.setHorizontalAlignment(JLabel.CENTER);
+        turnPanel.add(turnLabel, BorderLayout.PAGE_START);
+        turnPanel.add(comboPanel, BorderLayout.CENTER);
+        add(turnPanel, BorderLayout.PAGE_START);
+
+        add(dabGrid, BorderLayout.CENTER);
+
+        JPanel scorePanel = new JPanel();
+        scorePanel.setLayout(new BorderLayout());
+        scorePanel.add(p1ScoreLabel, BorderLayout.LINE_START);
+        scorePanel.add(p2ScoreLabel, BorderLayout.LINE_END);
+        add(scorePanel, BorderLayout.PAGE_END);
     }
 
     private JMenuBar setupMenuBar() {
-        // TODO: Create a new JMenuBar and populate it with the required items
-        // TODO: Call startGame() with the correct size when a "new game" item is selected
-        // TODO: Handle enabling/disabling interactive mode via a JCheckBoxMenuItem
-        // NOTE: For any credit, anonymous inner classes must be used
-        // NOTE: For more credit, lambda expressions must be used instead
-        // NOTE: For full credit, a method reference must be used within the interactive mode lambda
-        return null; // TODO: replace this placeholder so that it returns the JMenuBar
+
+        JFrame menuBar = new JFrame();
+        JMenuBar mainBar = new JMenuBar();
+        JMenu menu = new JMenu("Game");
+        JMenu subMenu = new JMenu("New");
+        JMenuItem twoGrid = new JMenuItem("Size 2x2");
+        JMenuItem threeGrid = new JMenuItem("Size 3x3");
+        JMenuItem fourGrid = new JMenuItem("Size 4x4");
+
+        subMenu.add(twoGrid).addActionListener(e -> {
+            startGame(2);
+        });
+        subMenu.add(threeGrid).addActionListener(e -> {
+            startGame(3);
+        });
+        subMenu.add(fourGrid).addActionListener(e -> {
+            startGame(4);
+        });
+
+        menu.add(subMenu);
+        mainBar.add(menu);
+        menuBar.setJMenuBar(mainBar);
+
+        JCheckBoxMenuItem interactive = new JCheckBoxMenuItem("Interactive grid");
+        menu.add(interactive);
+
+        interactive.addActionListener(e -> {
+            if (interactive.isSelected()) {
+                System.out.println("Enable Interactive Mode!");
+                dabGrid.setListener(newEdgeDrawn -> updateStatus(true));
+            } else {
+                dabGrid.removeListener();
+                System.out.println("Disable Interactive Mode!");
+            }
+        });
+
+        return mainBar;
     }
 
     private static void createAndShowGUI() {
-        // This is boilerplate code; please just use this exactly as it is.
         JFrame frame = new JFrame("Dots And Boxes");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         JComponent newContentPane = new DABPanel(frame);
@@ -136,9 +193,7 @@ public class DABPanel extends JPanel {
     }
 
     public static void main(String[] args) {
-        // This is boilerplate code; please be sure to use this exactly as-is.
-        // Note that a method reference is used to simplify the syntax
         SwingUtilities.invokeLater(DABPanel::createAndShowGUI);
-    }
 
+    }
 }
