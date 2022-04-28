@@ -47,6 +47,7 @@ public class DABPanel extends JPanel {
         xCombo.setName(X_COMBO);
 
         yCombo = new JComboBox<>();
+        //Remove me
         yCombo.setName(Y_COMBO);
 
         dirCombo = new JComboBox<>(Direction.values());
