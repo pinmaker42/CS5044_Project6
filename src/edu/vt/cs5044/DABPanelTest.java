@@ -1,4 +1,4 @@
-package test;
+package edu.vt.cs5044;
 
 import static edu.vt.cs5044.DABGuiName.*;
 import java.awt.Component;
@@ -49,13 +49,8 @@ public class DABPanelTest {
     private JMenuItem init4MenuItem;
     private JMenuItem interactiveMenuItem;
 
-    //
-    // ----- HELPER METHODS -----
-    //
-
     /**
      * Wrapper method just calls SwingUtilities.invokeAndWait and handles exceptions.
-     *
      *
      * @param r Runnable to invoke (may be a compatible lambda expression or method reference)
      */
@@ -93,8 +88,6 @@ public class DABPanelTest {
     /**
      * Draw an edge by setting the combo boxes and simulating a click of the draw button.
      *
-     *
-     *
      * @param x coordinate x
      * @param y coordinate y
      * @param dir direction
@@ -111,8 +104,6 @@ public class DABPanelTest {
     /**
      * Simulate a click of one of the menu items.
      *
-     *
-     *
      * @param item menu item to click
      */
     private void clickMenuItem(JMenuItem item) {
@@ -121,8 +112,6 @@ public class DABPanelTest {
 
     /**
      * Find a component by name within the hierarchy of a Swing container.
-     *
-     *
      *
      * @param <T> Type of component expected to be returned, which can be inferred by compiler
      * @param root top-level container to search
@@ -146,10 +135,6 @@ public class DABPanelTest {
             return null;
         }
     }
-
-    //
-    // ----- TEST METHODS -----
-    //
 
     /**
      * Create a new frame and panel, then find all the relevant components by name.
